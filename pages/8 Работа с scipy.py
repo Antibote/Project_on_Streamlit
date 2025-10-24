@@ -13,7 +13,7 @@ st.markdown("""
 - интерполяции данных.
 """)
 
-# --- Интегрирование ---
+
 st.header("1 Численное интегрирование")
 
 f = lambda x: np.sin(x) ** 2
@@ -29,7 +29,7 @@ ax1.set_title("Интегрирование sin²(x)")
 ax1.legend()
 st.pyplot(fig1)
 
-# --- Нахождение корня ---
+
 st.header("2 Нахождение корня уравнения")
 
 eq = lambda x: np.cos(x) - x
@@ -45,7 +45,7 @@ ax2.legend()
 ax2.set_title("Нахождение корня cos(x) = x")
 st.pyplot(fig2)
 
-# --- Интерполяция ---
+
 st.header("3 Интерполяция данных")
 
 x_data = np.linspace(0, 10, 8)
