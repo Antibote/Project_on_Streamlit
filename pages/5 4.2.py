@@ -62,7 +62,7 @@ if page == "Аналитическое решение":
 elif page == "Решение без SciPy":
     st.title("Решение системы методом Ньютона")
 
-    def Func(x):
+    def f(x):
         n = len(x)
         F = np.zeros(n)
         F[0] = (3 + 2 * x[0]) * x[0] - 2 * x[1] - 3
@@ -100,6 +100,7 @@ elif page == "Решение без SciPy":
         return None, k, norms
 
     n = st.number_input("Введите размерность системы (n):", min_value=2, max_value=20, value=4, step=1)
+    n = st.slider("Введите размерность системы (n):", 2, 20, 4)
     if st.button("Решить"):
         x0 = np.zeros(n)
         x, iterations, norms = Newton_method(x0, eps=1e-10, k=1000)
@@ -107,7 +108,7 @@ elif page == "Решение без SciPy":
         if x is not None:
             st.success(f"Сошлось за {iterations} итераций")
             st.write("**Приближённое решение:**", x)
-            st.write(f"**Невязка:** {np.linalg.norm(Func(x)):.2e}")
+            st.write(f"**Невязка:** {np.linalg.norm(f(x)):.2e}")
             exact = np.ones(n)
             st.write(f"**Погрешность относительно точного решения:** {np.linalg.norm(x - exact):.2e}")
 
@@ -156,7 +157,8 @@ elif page == "Решение с SciPy (система)":
         F[n - 1] = (3 + 2 * x[n - 1]) * x[n - 1] - x[n - 2] - 4
         return F
 
-    n = st.number_input("Введите размерность системы:", min_value=2, max_value=50, value=5)
+
+    n = st.slider("Выберите значение:", 2, 15, 5)
     method_name = st.selectbox("Выберите метод SciPy:", ["Метод Пауэлла", "Метод Левенберга-Марквардта", "Метод Крылова"])
     if method_name == "Метод Пауэлла":
         method = "hybr"

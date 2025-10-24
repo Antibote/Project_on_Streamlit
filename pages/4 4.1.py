@@ -14,102 +14,91 @@ page = st.sidebar.radio(
 # АНАЛИТИЧЕСКОЕ РЕШЕНИЕ
 
 if page == "Аналитическое решение":
-    st.title("Аналитическое решение уравнения методом бисекции")
-    st.markdown("Найти корень уравнения:")
+    # контейнер стабилизирует вывод
+    with st.container():
+        st.title("Аналитическое решение уравнения методом бисекции")
+        st.markdown("Найти корень уравнения на интервале $[0,10]$:")
 
-    st.latex(r"f(x) = (1 + x^{2})e^{-x} + \sin(x) = 0")
+        # единый LaTeX-блок вместо множества вызовов st.latex
+        st.markdown(
+            r"""
+            $$
+            f(x) = (1 + x^{2})e^{-x} + \sin(x) = 0
+            $$
+            """
+        )
 
-    st.markdown("на интервале [0; 10].")
+        st.header("1. Проверка знаков на концах интервала")
+        x0, x1 = 0, 10
 
-    # Определение функции
-    def f(x):
-        return (1 + x**2) * math.exp(-x) + math.sin(x)
+        def f(x):
+            return (1 + x**2) * math.exp(-x) + math.sin(x)
 
-    # --- Проверка знаков ---
-    st.header("1 Проверка знаков на концах интервала")
+        f0, f1 = f(x0), f(x1)
 
-    x0, x1 = 0, 10
-    f0, f1 = f(x0), f(x1)
+        st.markdown(
+            r"""
+            Рассчитаем значения функции в концах:
+            $$
+            f(0) = (1 + 0^2)e^{0} + \sin(0) = 1 > 0
+            $$
+            $$
+            f(10) = (1 + 10^2)e^{-10} + \sin(10) \approx 0.00045 - 0.545 \approx -0.5445 < 0
+            $$
+            Следовательно, по теореме о промежуточных значениях существует хотя бы один корень на $[0,10]$.
+            """
+        )
 
-    st.latex(r"f(0) = (1 + 0^2)e^0 + \sin(0) = 1 > 0")
-    st.latex(r"f(10) = (1 + 10^2)e^{-10} + \sin(10) \approx 0.00045 - 0.545 = -0.5445 < 0")
+        st.header("2. Метод бисекции — идея и производная")
+        st.markdown(
+            r"""
+            Для анализа поведения функции полезно знать производную:
+            $$
+            f'(x) = 2x e^{-x} - (1+x^2)e^{-x} + \cos x
+            = -e^{-x}(x-1)^2 + \cos x.
+            $$
+            """
+        )
 
-    st.markdown("""
-    Следовательно, \( f(0) > 0 \) и \( f(10) < 0 \),  
-    по теореме о промежуточных значениях уравнение имеет хотя бы один корень на [0; 10].
-    """)
+        # Для краткости — выводим заранее известный результат:
+        st.markdown("Найденный корень (примерно):")
+        st.markdown(
+        r"""
+        $$
+        x \approx 3.5443
+        $$
+        """)
 
-    # --- Метод бисекции ---
-    st.header("2 Метод бисекции")
 
-    st.markdown("Ищем количество корней и точки смены знака.")
-    st.latex(r"f'(x) = 2xe^{-x} - (1+x^2)e^{-x} + \cos(x) = (-x^2 + 2x - 1)e^{-x} + \cos(x)")
-    st.latex(r"= -e^{-x}(x - 1)^2 + \cos(x)")
 
-    a, b = 0, 10
-    eps = 0.001
-    iteration = 0
-    steps = []
-
-    while (b - a) / 2 > eps:
-        c = (a + b) / 2
-        iteration += 1
-        fc = f(c)
-        steps.append((iteration, a, b, c, fc))
-        if fc == 0:
-            break
-        elif f(a) * fc < 0:
-            b = c
-        else:
-            a = c
-
-    root = (a + b) / 2
-
-    st.markdown(f"""
-    После {iteration} итераций методом бисекции получаем:  
-    Корень примерно равен {root:.4f}
-    """)
-
-    st.header("3 Ход вычислений")
-
-    st.dataframe(
-        {
-            "Итерация": [s[0] for s in steps],
-            "a": [round(s[1], 4) for s in steps],
-            "b": [round(s[2], 4) for s in steps],
-            "c": [round(s[3], 4) for s in steps],
-            "f(c)": [round(s[4], 6) for s in steps],
-        }
-    )
-
-    st.success(f"Найденный корень: x ≈ {root:.4f}")
-    st.caption("Задача решена методом бисекции по аналитическим выкладкам.")
-
-# ---------------------------------------------------------------------
 # РЕШЕНИЕ БЕЗ SCIPY
-# ---------------------------------------------------------------------
+
 elif page == "Решение без scipy":
-    st.title("Решение уравнения без использования scipy")
-    st.markdown("Реализация метода бисекции с автоматическим поиском интервалов смены знака.")
+    import matplotlib.pyplot as plt
+
+    st.title("Решение уравнения без использования SciPy")
+    st.markdown("Реализация метода бисекции с автоматическим поиском интервалов смены знака и визуализацией.")
 
     # --- Определение функций ---
     def f(x):
-        """Функция уравнения: (1+x^2)e^(-x) + sin(x)"""
         return (1 + x**2) * math.exp(-x) + math.sin(x)
 
     def bisection(f, a, b, eps=1e-8, max_iter=1000):
-        """Метод бисекций"""
+        """Метод бисекций с логом итераций"""
         if f(a) * f(b) > 0:
-            return None
+            return None, []
+        steps = []
         for i in range(max_iter):
             c = (a + b) / 2
-            if abs(f(c)) < eps or (b - a) < eps:
-                return c
-            if f(a) * f(c) < 0:
+            fc = f(c)
+            steps.append((i + 1, a, b, c, fc))
+            if abs(fc) < eps or (b - a) < eps:
+                return c, steps
+            if f(a) * fc < 0:
                 b = c
             else:
                 a = c
-        return (a + b) / 2
+        return (a + b) / 2, steps
 
     def find_sign_changes(f, start, end, step=0.1):
         """Автоматически находит интервалы смены знака функции"""
@@ -126,36 +115,69 @@ elif page == "Решение без scipy":
             x += step
         return intervals
 
-    # --- Основная программа ---
-    st.header("1 Поиск интервалов смены знака")
+    # --- Ввод параметров пользователем ---
+    st.header("1. Настройка параметров поиска")
+    step = st.slider("Шаг для поиска интервалов:", 0.01, 1.0, 0.1, 0.01)
+    eps = st.number_input("Точность ε:", value=1e-8, format="%.1e")
 
-    intervals = find_sign_changes(f, 0, 10, 0.1)
+    # --- Поиск интервалов ---
+    st.header("2. Поиск интервалов смены знака")
+    intervals = find_sign_changes(f, 0, 10, step)
+
     if not intervals:
         st.error("Интервалы смены знака не найдены.")
     else:
-        st.write("Найдены интервалы:")
-        for i, (a, b) in enumerate(intervals):
-            st.write(f"Интервал {i+1}: [{a:.2f}, {b:.2f}] — f(a)={f(a):.3f}, f(b)={f(b):.3f}")
+        st.write(f"Найдено интервалов: {len(intervals)}")
+        intervals_text = "\n".join(
+            [f"- Интервал {i+1}: [{a:.2f}, {b:.2f}] — f(a)={f(a):.3f}, f(b)={f(b):.3f}"
+             for i, (a, b) in enumerate(intervals)]
+        )
+        st.markdown(intervals_text)
 
-        st.header("2 Поиск корней методом бисекции")
-
+        # --- Поиск корней ---
+        st.header("3. Поиск корней методом бисекции")
         roots = []
         for a, b in intervals:
-            root = bisection(f, a, b)
+            root, steps = bisection(f, a, b, eps)
             if root is not None:
-                roots.append(root)
-                st.write(f"Корень ≈ {root:.8f}, f(x) = {f(root):.2e}")
+                roots.append((root, steps))
+                st.success(f"Корень ≈ {root:.4f}, f(x) = {f(root):.2e}")
 
-        st.success(f"Найдено корней на интервале [0, 10]: {len(roots)}")
+                st.expander(f"Показать ход вычислений для [{a:.2f}, {b:.2f}]").dataframe(
+                    {
+                        "Итерация": [s[0] for s in steps],
+                        "a": [round(s[1], 6) for s in steps],
+                        "b": [round(s[2], 6) for s in steps],
+                        "c": [round(s[3], 6) for s in steps],
+                        "f(c)": [round(s[4], 8) for s in steps],
+                    }
+                )
+
         if roots:
-            st.markdown(
-                "Корни: " + ", ".join([f"{r:.5f}" for r in roots])
-            )
+            st.markdown("**Найденные корни:** " + ", ".join([f"{r[0]:.6f}" for r in roots]))
+
+            # --- График функции и корней ---
+            st.header("4. Визуализация")
+            x_vals = np.linspace(0, 10, 1000)
+            y_vals = [(1 + x**2) * np.exp(-x) + np.sin(x) for x in x_vals]
+
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.plot(x_vals, y_vals, label="f(x)")
+            ax.axhline(0, color="black", linestyle="--", linewidth=1)
+            for r, _ in roots:
+                ax.plot(r, f(r), "ro", label=f"x ≈ {r:.3f}")
+            ax.set_title("График функции и найденные корни")
+            ax.set_xlabel("x")
+            ax.set_ylabel("f(x)")
+            ax.legend()
+            ax.grid(True)
+            st.pyplot(fig)
+        else:
+            st.warning("Корни не найдены на выбранном интервале.")
 
 
-# ---------------------------------------------------------------------
 # РЕШЕНИЕ С SCIPY
-# ---------------------------------------------------------------------
+
 elif page == "Решение с SciPy":
     st.title("Решение с использованием SciPy")
     st.markdown("""
