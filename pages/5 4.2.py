@@ -159,7 +159,7 @@ elif page == "Решение с SciPy (система)":
         sol = root(f, x0, method=method)
         if sol.success:
             st.success(f"Решение найдено ({method}) за {sol.nfev} вызовов функции")
-            st.write("**Приближённое решение:**", sol.x)
+
             st.write(f"**Невязка:** {np.linalg.norm(sol.fun):.2e}")
 
             exact = np.ones(n)
