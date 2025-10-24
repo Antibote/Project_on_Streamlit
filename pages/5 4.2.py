@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 st.page_link("./app.py", label="Вернуться на главную")
 st.set_page_config(page_title="Метод Ньютона", layout="centered")
 
-# Меню
+
 page = st.sidebar.radio(
     "Выберите раздел:",
     ["Аналитическое решение", "Решение без SciPy", "Решение с SciPy (одномерное)", "Решение с SciPy (система)"]
 )
 
-# --- АНАЛИТИЧЕСКОЕ РЕШЕНИЕ ---
+
 if page == "Аналитическое решение":
     st.title("Аналитическое решение задачи 4.2")
 
@@ -45,7 +45,7 @@ if page == "Аналитическое решение":
     use_container_width=True)
 
 
-# --- РЕШЕНИЕ БЕЗ SCIPY ---
+
 elif page == "Решение без SciPy":
     st.title("Решение системы методом Ньютона")
 
@@ -99,7 +99,7 @@ elif page == "Решение без SciPy":
             exact = np.ones(n)
             st.write(f"**Погрешность относительно точного решения:** {np.linalg.norm(x - exact):.2e}")
 
-            # Визуализация сходимости
+
             plt.figure(figsize=(6, 3))
             plt.semilogy(norms, marker='o')
             plt.title("Сходимость метода Ньютона")
@@ -109,7 +109,7 @@ elif page == "Решение без SciPy":
         else:
             st.error("Метод не сошёлся")
 
-# --- РЕШЕНИЕ С SCIPY (ОДНОМЕРНОЕ) ---
+
 elif page == "Решение с SciPy (одномерное)":
     st.title("Решение с помощью SciPy (bisect)")
     st.markdown("Пример нахождения корня уравнения $f(x) = x^3 - 2x - 5$ методом бисекции.")
@@ -131,7 +131,7 @@ elif page == "Решение с SciPy (одномерное)":
     plt.legend()
     st.pyplot(plt)
 
-# --- РЕШЕНИЕ С SCIPY (СИСТЕМА) ---
+
 elif page == "Решение с SciPy (система)":
     st.title("Решение системы с помощью SciPy (scipy.optimize.root)")
 
@@ -154,7 +154,7 @@ elif page == "Решение с SciPy (система)":
     else:
         method = "krylov"
     if st.button("Решить систему"):
-        #Начальное приближение
+
         x0 = np.zeros(n)
         sol = root(f, x0, method=method)
         if sol.success:

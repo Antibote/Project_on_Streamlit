@@ -12,15 +12,14 @@ page = st.sidebar.radio(
     ["Аналитическое решение", "Решение без scipy", "Решение с SciPy"]
 )
 
-# АНАЛИТИЧЕСКОЕ РЕШЕНИЕ
 
 if page == "Аналитическое решение":
-    # контейнер стабилизирует вывод
+
     with st.container():
         st.title("Аналитическое решение уравнения методом бисекции")
         st.markdown("Найти корень уравнения на интервале $[0,10]$:")
 
-        # единый LaTeX-блок вместо множества вызовов st.latex
+
         st.markdown(
             r"""
             $$
@@ -61,7 +60,6 @@ if page == "Аналитическое решение":
             """
         )
 
-        # Для краткости — выводим заранее известный результат:
         st.markdown("Найденный корень (примерно):")
         st.markdown(
         r"""
@@ -72,7 +70,6 @@ if page == "Аналитическое решение":
 
 
 
-# РЕШЕНИЕ БЕЗ SCIPY
 
 elif page == "Решение без scipy":
     import matplotlib.pyplot as plt
@@ -80,7 +77,7 @@ elif page == "Решение без scipy":
     st.title("Решение уравнения без использования SciPy")
     st.markdown("Реализация метода бисекции с автоматическим поиском интервалов смены знака и визуализацией.")
 
-    # --- Определение функций ---
+
     def f(x):
         return (1 + x**2) * math.exp(-x) + math.sin(x)
 
@@ -116,12 +113,12 @@ elif page == "Решение без scipy":
             x += step
         return intervals
 
-    # --- Ввод параметров пользователем ---
+
     st.header("1. Настройка параметров поиска")
     step = st.slider("Шаг для поиска интервалов:", 0.01, 1.0, 0.1, 0.01)
     eps = st.number_input("Точность ε:", value=1e-8, format="%.1e")
 
-    # --- Поиск интервалов ---
+
     st.header("2. Поиск интервалов смены знака")
     intervals = find_sign_changes(f, 0, 10, step)
 
@@ -135,7 +132,7 @@ elif page == "Решение без scipy":
         )
         st.markdown(intervals_text)
 
-        # --- Поиск корней ---
+
         st.header("3. Поиск корней методом бисекции")
         roots = []
         for a, b in intervals:
@@ -157,7 +154,7 @@ elif page == "Решение без scipy":
         if roots:
             st.markdown("**Найденные корни:** " + ", ".join([f"{r[0]:.6f}" for r in roots]))
 
-            # --- График функции и корней ---
+
             st.header("4. Визуализация")
             x_vals = np.linspace(0, 10, 1000)
             y_vals = [(1 + x**2) * np.exp(-x) + np.sin(x) for x in x_vals]
@@ -177,7 +174,7 @@ elif page == "Решение без scipy":
             st.warning("Корни не найдены на выбранном интервале.")
 
 
-# РЕШЕНИЕ С SCIPY
+
 
 elif page == "Решение с SciPy":
     st.title("Решение с использованием SciPy")
@@ -189,7 +186,7 @@ elif page == "Решение с SciPy":
     def f(x):
         return (1 + x**2) * np.exp(-x) + np.sin(x)
 
-    # --- Поиск корней ---
+
     x_values = np.linspace(0, 10, 1000)
     roots = []
 
@@ -200,7 +197,7 @@ elif page == "Решение с SciPy":
             if not roots or abs(root - roots[-1]) > 1e-4:
                 roots.append(root)
 
-    # --- Вывод результатов ---
+
     if roots:
         st.success(f"Найдено корней: {len(roots)}")
         for r in roots:
@@ -208,7 +205,7 @@ elif page == "Решение с SciPy":
     else:
         st.error("Корни на интервале [0, 10] не найдены.")
 
-    # --- Построение графика ---
+
     st.header("График функции f(x) и найденные корни")
 
     y_values = f(x_values)
