@@ -7,7 +7,7 @@ from scipy import integrate, signal
 st.page_link("./app.py", label="⬅ Вернуться на главную")
 
 # --- Заголовок ---
-st.title("📈 Научная графика")
+st.title("Научная графика")
 
 st.markdown("""
 Эта страница демонстрирует построение научных графиков с использованием **NumPy**, **SciPy** и **Matplotlib**.
@@ -34,7 +34,7 @@ st.header("Интегрирование функции sin²(x)")
 
 f = lambda x: np.sin(x) ** 2
 integral, error = integrate.quad(f, 0, np.pi)
-st.write(f"∫ sin²(x) dx от 0 до π = {integral:.4f} (погрешность ≈ {error:.1e})")
+st.write(f"∫ sin²(x) dx от 0 до x = {integral:.4f} (погрешность ≈ {error:.1e})")
 
 x_vals = np.linspace(0, np.pi, 200)
 y_vals = f(x_vals)
@@ -67,4 +67,3 @@ ax3.set_title("Фильтрация сигнала с помощью SciPy")
 ax3.legend()
 st.pyplot(fig3)
 
-st.success("Демонстрация NumPy, SciPy и Matplotlib успешно выполнена!")
