@@ -2,6 +2,7 @@ import streamlit as st
 import math
 import numpy as np
 from scipy.optimize import bisect
+import matplotlib.pyplot as plt
 
 st.page_link("./app.py", label="Вернуться на главную")
 st.set_page_config(page_title="Метод бисекции", layout="centered")
@@ -188,6 +189,7 @@ elif page == "Решение с SciPy":
     def f(x):
         return (1 + x**2) * np.exp(-x) + np.sin(x)
 
+    # --- Поиск корней ---
     x_values = np.linspace(0, 10, 1000)
     roots = []
 
@@ -198,9 +200,30 @@ elif page == "Решение с SciPy":
             if not roots or abs(root - roots[-1]) > 1e-4:
                 roots.append(root)
 
+    # --- Вывод результатов ---
     if roots:
         st.success(f"Найдено корней: {len(roots)}")
         for r in roots:
             st.write(f"x = {r:.6f}, f(x) = {f(r):.2e}")
     else:
         st.error("Корни на интервале [0, 10] не найдены.")
+
+    # --- Построение графика ---
+    st.header("График функции f(x) и найденные корни")
+
+    y_values = f(x_values)
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(x_values, y_values, label=r"$f(x) = (1+x^2)e^{-x} + \sin(x)$", linewidth=2)
+    ax.axhline(0, color='black', linewidth=1, linestyle='--')
+
+    if roots:
+        ax.scatter(roots, [f(r) for r in roots], color='red', s=60, label="Найденные корни")
+
+    ax.set_xlabel("x")
+    ax.set_ylabel("f(x)")
+    ax.set_title("График функции и найденные корни (SciPy)")
+    ax.legend()
+    ax.grid(True)
+
+    st.pyplot(fig)
