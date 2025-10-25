@@ -94,7 +94,7 @@ elif page == "Решение без SciPy":
 
         if x is not None:
             st.success(f"Сошлось за {iterations} итераций")
-            st.write("**Приближённое решение:**", x)
+            st.write("**Приближённое решение:**", *x)
             st.write(f"**Невязка:** {np.linalg.norm(f(x)):.2e}")
             exact = np.ones(n)
             st.write(f"**Погрешность относительно точного решения:** {np.linalg.norm(x - exact):.2e}")
